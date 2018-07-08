@@ -16,7 +16,13 @@ export default {
   },
   components: {
     authBox: AuthBox
+  },
+  created () {
+    if (this.$store.state.isLoggedIn) {
+      this.$router.push({name: 'Main'})
+    }
   }
+
 }
 
 </script>

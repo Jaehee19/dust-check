@@ -3,8 +3,7 @@
     <dust-state
       v-if="isLoggedIn"
     ></dust-state>
-
-    <div v-else>
+    <div v-if="!isLoggedIn">
       <h1>
         <span class="icon">
           <i class="fa fa-cloud"></i>

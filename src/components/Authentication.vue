@@ -65,8 +65,7 @@ export default {
     },
     signup (email, password) {
       firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
-        console.log('resist success')
-        this.authType = 'login'
+        this.$router.push({name: 'Main'})
         this.$notify.open({
           content: 'Sign up Success',
           icon: 'smile-o',

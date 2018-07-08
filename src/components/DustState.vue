@@ -19,13 +19,12 @@
         v-if="hasProblem"
         class="error-text"
       >
-        API 에러
+        API 에러<br>
+        잠시후 다시 접속해 주세요.
       </span>
       <div
         class="dust-state-items"
-        v-else
       >
-        <!-- <Area-Map></Area-Map> -->
         <div class="dust-info">
           <div class="info-PM10">
             <span class="info-type">미세먼지</span>
@@ -47,11 +46,14 @@
           </div>
         </div>
         <dust-state-item
+          v-if="dustData.PM25"
           v-for="( valuePM10, key ) of dustData.PM10" :key="key"
           :sido="sidoName[key]"
           :valuePM10="valuePM10"
           :valuePM25="dustData.PM25[key]"
           :dataTime="dustData['PM10__dataTime']"
+
+          @click="setSubDustState(key)"
         >
         </dust-state-item>
       </div>
@@ -62,7 +64,6 @@
 <script>
 import firebase from '../firebase/firebase'
 import DustStateItem from './DustStateItem'
-import AreaMap from './AreaMap'
 
 export default {
   name: 'dust-state',
@@ -96,12 +97,14 @@ export default {
     }
   },
   components: {
-    DustStateItem: DustStateItem,
-    AreaMap: AreaMap
+    DustStateItem: DustStateItem
   },
   created () {
     this.setDustState('PM10')
     this.setDustState('PM25')
+  },
+  mounted () {
+    this.entry = true
   },
   methods: {
     setDustState (pm) {
@@ -115,10 +118,11 @@ export default {
       } else {
         this.$http.get(`/dust?pm=${pm}`).then((result) => {
           console.log(result)
+          const date = new Date()
           this.$ls.set(
             this.dustDataName + pm,
             result.data.response.body[0].items[0].item[0],
-            60 * 60 * 1000
+            date.getMinutes() > 30 ? 60 * 30 * 1000 : 60 * 60 * 1000
           )
           this.parseDustData(pm)
         }).catch(err => {
@@ -149,6 +153,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 1s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 1;
+  }
   .dust-state {
     display: flex;
     flex-direction: column;
@@ -214,10 +224,10 @@ export default {
           background: #000;
         }
         &:nth-of-type(1):before{
-          background: #049805;
+          background: #3c81df;
         }
         &:nth-of-type(2):before{
-          background: #275eff;
+          background: #049805;
         }
         &:nth-of-type(3):before{
           background: orange

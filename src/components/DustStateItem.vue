@@ -1,8 +1,8 @@
 <template>
-  <div class="dust-item">
-    <div class="sidoName">
+  <div @click="setSubDustState(sido)" class="dust-item">
+    <div class="sido-name">
       {{sido}}
-      <span class="dataTime">
+      <span class="data-time">
         {{parseDataTime(dataTime[0])}}
       </span>
     </div>
@@ -18,7 +18,12 @@
       <span class="dust-state-desc">
         미세먼지
         <br>
-        <span class="pm-value">{{parseValueStr(valuePM10[0])}}</span> ㎍/m³
+        <div v-if="!parseValueStr(valuePM10[0])">
+          <span>No data</span>
+        </div>
+        <div v-else>
+          <span class="pm-value">{{parseValueStr(valuePM10[0])}}</span> ㎍/m³
+        </div>
       </span>
     </div>
     <div
@@ -33,22 +38,62 @@
       <span class="dust-state-desc">
         초미세먼지
         <br>
-        <span class="pm-value">{{parseValueStr(valuePM25[0])}}</span> ㎍/m³
+        <div v-if="!parseValueStr(valuePM25[0])">
+          <span>No data</span>
+        </div>
+        <div v-else>
+          <span class="pm-value">{{parseValueStr(valuePM25[0])}}</span> ㎍/m³
+        </div>
       </span>
     </div>
+    <sub-dust-state
+      :sidoName="sido"
+      :isShow="isShow"
+      :subDustData="subDustData"
+    ></sub-dust-state>
   </div>
 </template>
 
 <script>
+import SubDustState from './SubDustState'
 export default {
   data () {
-    return {}
+    return {
+      isShow: false,
+      subDustData: null
+    }
   },
   created () {
     // console.log(this.valuePM10)
   },
+  components: {
+    SubDustState: SubDustState
+  },
   props: ['sido', 'valuePM10', 'valuePM25', 'dataTime'],
   methods: {
+    setSubDustState (sidoName) {
+      console.log('sub clicked')
+      if (this.$ls.get(sidoName)) {
+        this.isShow = true
+        this.subDustData = this.$ls.get(sidoName)
+        console.log('HAS LS DATA')
+      } else {
+        this.$http.get(`/dust?subpm=${sidoName}`).then((result) => {
+          const date = new Date()
+          this.$ls.set(
+            sidoName,
+            result.data.response.body[0].items[0],
+            date.getMinutes() > 30 ? 60 * 30 * 1000 : 60 * 60 * 1000
+          )
+          this.isShow = true
+          this.subDustData = this.$ls.get(sidoName)
+          console.log('NO LS DATA')
+        }).catch(err => {
+          console.log(err)
+          this.hasProblem = true
+        })
+      }
+    },
     parseValueStr (str) {
       return parseInt(str.replace(/"/, ''))
     },
@@ -56,19 +101,19 @@ export default {
       return str.replace(/....-/, '') + ' 기준'
     },
     getStateValue (pmType, pmRate) {
-      if (pmRate < (pmType === 'PM10' ? 30 : 15)) {
+      if (pmRate <= (pmType === 'PM10' ? 30 : 15)) {
         return {
           icon: 'sentiment_very_satisfied',
           state: '좋음',
           stateClass: 'state-very-good'
         }
-      } else if (pmRate < (pmType === 'PM10' ? 80 : 35)) {
+      } else if (pmRate <= (pmType === 'PM10' ? 80 : 35)) {
         return {
           icon: 'sentiment_satisfied',
           state: '보통',
           stateClass: 'state-good'
         }
-      } else if (pmRate < (pmType === 'PM10' ? 150 : 75)) {
+      } else if (pmRate <= (pmType === 'PM10' ? 150 : 75)) {
         return {
           icon: 'sentiment_dissatisfied',
           state: '나쁨',
@@ -97,7 +142,8 @@ export default {
     width: 280px;
     background: #fbfbfb;
     border: 1px solid #d2d2d2;
-    .sidoName {
+    cursor: pointer;
+    .sido-name {
       position: relative;
       width: 100%;
       margin: 5px;
@@ -108,7 +154,7 @@ export default {
       line-height: 33px;
       text-align: left;
     }
-    .dataTime{
+    .data-time{
       position: absolute;
       bottom: 5px;
       right: 0;
@@ -126,10 +172,10 @@ export default {
       padding: 10px 0;
       flex-flow: column;
       &.state-very-good{
-        color: #049805;
+        color: #3c81df;
       }
       &.state-good{
-        color: #275eff;
+        color: #049805;
       }
       &.state-bad{
         color: orange
