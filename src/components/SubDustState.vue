@@ -58,7 +58,7 @@ export default {
 </script>
 
 <style lang="less">
-.modal.align-baseline {
+.modal.align-baseline.is-active{
   align-items: center;
 }
 

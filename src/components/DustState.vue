@@ -117,7 +117,7 @@ export default {
         this.parseDustData(pm)
       } else {
         this.$http.get(`/dust?pm=${pm}`).then((result) => {
-          console.log(result)
+          // console.log(result)
           const date = new Date()
           this.$ls.set(
             this.dustDataName + pm,
@@ -153,12 +153,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity 1s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 1;
-  }
   .dust-state {
     display: flex;
     flex-direction: column;

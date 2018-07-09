@@ -2,7 +2,9 @@
   <div @click="setSubDustState(sido)" class="dust-item">
     <div class="sido-name">
       {{sido}}
-      <span v-if="pending" class="button is-primary is-loading">Loading</span>
+      <transition name="fade">
+        <span v-if="pending" class="button is-primary is-loading">Loading</span>
+      </transition>
       <span class="data-time">
         {{parseDataTime(dataTime[0])}}
       </span>
@@ -134,81 +136,87 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .dust-item {
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 1;
+}
+.dust-item {
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 5px;
+  margin: 0 10px 20px;
+  padding: 10px;
+  width: 280px;
+  background: #fbfbfb;
+  border: 1px solid #d2d2d2;
+  cursor: pointer;
+  .sido-name {
+    position: relative;
+    width: 100%;
+    margin: 5px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 33px;
+    text-align: left;
+    .button.is-loading{
+      padding: 0;
+      width: 32px;
+      background: transparent;
+      &:after{
+        margin:0;
+        border: 3px solid #dbdbdb;
+        width: 24px;
+        height: 24px;
+        top:3px;
+        left:3px;
+        border-color: transparent transparent #909090 #909090!important;
+      }
+    }
+  }
+  .data-time{
+    position: absolute;
+    bottom: 5px;
+    right: 0;
+    font-size: 13px;
+    color: #919191;
+  }
+  .dust-state-icon i {
+    font-size: 40px;
+  }
+  .value-pm10,
+  .value-pm25 {
     display: flex;
-    flex-wrap: wrap;
     border-radius: 5px;
-    margin: 0 10px 20px;
-    padding: 10px;
-    width: 280px;
-    background: #fbfbfb;
-    border: 1px solid #d2d2d2;
-    cursor: pointer;
-    .sido-name {
-      position: relative;
-      width: 100%;
-      margin: 5px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
-      font-size: 30px;
-      font-weight: 700;
-      line-height: 33px;
-      text-align: left;
-      .button.is-loading{
-        padding: 0;
-        width: 32px;
-        background: transparent;
-        &:after{
-          margin:0;
-          border: 3px solid #dbdbdb;
-          width: 24px;
-          height: 24px;
-          top:3px;
-          left:3px;
-          border-color: transparent transparent #909090 #909090!important;
-        }
-      }
+    width: 50%;
+    padding: 10px 0;
+    flex-flow: column;
+    &.state-very-good{
+      color: #3c81df;
     }
-    .data-time{
-      position: absolute;
-      bottom: 5px;
-      right: 0;
-      font-size: 13px;
-      color: #919191;
+    &.state-good{
+      color: #049805;
     }
-    .dust-state-icon i {
-      font-size: 40px;
+    &.state-bad{
+      color: orange
     }
-    .value-pm10,
-    .value-pm25 {
-      display: flex;
-      border-radius: 5px;
-      width: 50%;
-      padding: 10px 0;
-      flex-flow: column;
-      &.state-very-good{
-        color: #3c81df;
-      }
-      &.state-good{
-        color: #049805;
-      }
-      &.state-bad{
-        color: orange
-      }
-      &.state-very-bad{
-        color: brown
-      }
-    }
-    .pm-value{
-      font-size: 15px;
-      font-weight: 700;
+    &.state-very-bad{
+      color: brown
     }
   }
+  .pm-value{
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
 
-  @media (max-width: 768px) {
-    .dust-item {
-      width: 100%;
-    }
+@media (max-width: 768px) {
+  .dust-item {
+    width: 100%;
   }
+}
 
 </style>
