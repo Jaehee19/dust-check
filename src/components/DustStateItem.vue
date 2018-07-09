@@ -59,13 +59,18 @@
 
 <script>
 import SubDustState from './SubDustState'
+import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
       isShow: false,
-      pending: false,
       subDustData: null
     }
+  },
+  computed: {
+    ...mapGetters({
+      pending: 'pending'
+    })
   },
   components: {
     SubDustState: SubDustState
@@ -73,12 +78,22 @@ export default {
   props: ['sido', 'valuePM10', 'valuePM25', 'dataTime'],
   methods: {
     setSubDustState (sidoName) {
-      this.pending = true
+      if (this.pending) {
+        this.$notify.open({
+          content: '잠시만 기다려주세요',
+          icon: 'smile-o',
+          placement: 'left-center',
+          transition: 'bounce',
+          type: 'primary'
+        })
+        return
+      }
+      this.$store.commit('START_PENDING')
       if (this.$ls.get(sidoName)) {
         this.isShow = true
         this.subDustData = this.$ls.get(sidoName)
         // console.log('HAS LS DATA')
-        this.pending = false
+        this.$store.commit('END_PENDING')
       } else {
         this.$http.get(`/dust?subpm=${sidoName}`).then((result) => {
           const date = new Date()
@@ -90,10 +105,11 @@ export default {
           this.isShow = true
           this.subDustData = this.$ls.get(sidoName)
           // console.log('NO LS DATA')
-          this.pending = false
+          this.$store.commit('END_PENDING')
         }).catch(err => {
           console.log(err)
           this.hasProblem = true
+          this.$store.commit('END_PENDING')
         })
       }
     },

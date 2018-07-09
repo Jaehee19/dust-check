@@ -3,7 +3,8 @@ import Vuex from 'vuex'
 import * as types from './mutation-types'
 
 const state = {
-  isLoggedIn: false
+  isLoggedIn: false,
+  pending: false
 }
 
 const mutations = {
@@ -12,6 +13,12 @@ const mutations = {
   },
   [types.LOGOUT]: state => {
     state.isLoggedIn = false
+  },
+  [types.START_PENDING]: state => {
+    state.pending = true
+  },
+  [types.END_PENDING]: state => {
+    state.pending = false
   }
 }
 
@@ -25,7 +32,8 @@ const actions = {
 }
 
 const getters = {
-  isLoggedIn: state => state.isLoggedIn
+  isLoggedIn: state => state.isLoggedIn,
+  pending: state => state.pending
 }
 
 Vue.use(Vuex)
