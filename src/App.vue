@@ -23,11 +23,4 @@ html,body{
   color: #2c3e50;
   height: 100%;
 }
-.modal.align-baseline{
-  align-items: center;
-}
-.modal.align-baseline .modal-card{
-  margin: 0 20px;
-  max-height: 80%;
-}
 </style>

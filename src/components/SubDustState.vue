@@ -7,10 +7,7 @@
           <span class="data-time">{{ item.dataTime[0].replace(/....-/,"") }} 기준</span>
         </div>
         <div class="dust-value">
-          <span
-            class="val10"
-            v-bind:class="$parent.getStateValue('PM10', parseValueStr(item.pm10Value[0])).stateClass"
-          >
+          <span class="val10" v-bind:class="$parent.getStateValue('PM10', parseValueStr(item.pm10Value[0])).stateClass">
             미세먼지 :
             <span v-if="!parseValueStr(item.pm10Value[0])">
               No data
@@ -19,10 +16,7 @@
               {{ parseValueStr(item.pm10Value[0])}} ㎍/m³
             </span>
           </span>
-          <span
-            class="val25"
-            v-bind:class="$parent.getStateValue('PM25', parseValueStr(item.pm25Value[0])).stateClass"
-          >
+          <span class="val25" v-bind:class="$parent.getStateValue('PM25', parseValueStr(item.pm25Value[0])).stateClass">
             초미세먼지 :
             <span v-if="!parseValueStr(item.pm25Value[0])">
               No data
@@ -64,51 +58,59 @@ export default {
 </script>
 
 <style lang="less">
-  .modal-card-title {
-    font-size: 22px;
+.modal.align-baseline {
+  align-items: center;
+}
+
+.modal.align-baseline .modal-card {
+  margin: 0 20px;
+  max-height: 80%;
+}
+
+.modal-card-title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.sub-dust-wrap {
+  display: flex;
+  flex-flow: column;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eaeaea;
+  .city-name {
+    padding-bottom: 8px;
+    width: 100%;
+    font-size: 15px;
     font-weight: bold;
+    .data-time {
+      font-size: 12px;
+      color: #919191;
+    }
   }
-
-  .sub-dust-wrap {
+  .dust-value {
     display: flex;
-    flex-flow: column;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eaeaea;
-    .city-name {
-      padding-bottom: 8px;
-      width: 100%;
-      font-size: 15px;
+    justify-content: space-between;
+    font-size: 14px;
+    .val10,
+    .val25 {
+      padding: 5px 0;
+      width: 48%;
+      border-radius: 2px;
       font-weight: bold;
-      .data-time {
-        font-size: 12px;
-        color: #919191;
+      &.state-very-good {
+        color: #3c81df;
       }
-    }
-    .dust-value {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      .val10,
-      .val25{
-        padding: 5px 0;
-        width: 48%;
-        border-radius: 2px;
-        font-weight: bold;
-        &.state-very-good{
-          color: #3c81df;
-        }
-        &.state-good{
-          color: #049805;
-        }
-        &.state-bad{
-          color: orange
-        }
-        &.state-very-bad{
-          color: brown
-        }
+      &.state-good {
+        color: #049805;
+      }
+      &.state-bad {
+        color: orange
+      }
+      &.state-very-bad {
+        color: brown
       }
     }
   }
-
+}
 </style>

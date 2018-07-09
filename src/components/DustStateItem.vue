@@ -2,6 +2,7 @@
   <div @click="setSubDustState(sido)" class="dust-item">
     <div class="sido-name">
       {{sido}}
+      <span v-if="pending" class="button is-primary is-loading">Loading</span>
       <span class="data-time">
         {{parseDataTime(dataTime[0])}}
       </span>
@@ -60,11 +61,9 @@ export default {
   data () {
     return {
       isShow: false,
+      pending: false,
       subDustData: null
     }
-  },
-  created () {
-    // console.log(this.valuePM10)
   },
   components: {
     SubDustState: SubDustState
@@ -72,11 +71,12 @@ export default {
   props: ['sido', 'valuePM10', 'valuePM25', 'dataTime'],
   methods: {
     setSubDustState (sidoName) {
-      console.log('sub clicked')
+      this.pending = true
       if (this.$ls.get(sidoName)) {
         this.isShow = true
         this.subDustData = this.$ls.get(sidoName)
-        console.log('HAS LS DATA')
+        // console.log('HAS LS DATA')
+        this.pending = false
       } else {
         this.$http.get(`/dust?subpm=${sidoName}`).then((result) => {
           const date = new Date()
@@ -87,7 +87,8 @@ export default {
           )
           this.isShow = true
           this.subDustData = this.$ls.get(sidoName)
-          console.log('NO LS DATA')
+          // console.log('NO LS DATA')
+          this.pending = false
         }).catch(err => {
           console.log(err)
           this.hasProblem = true
@@ -153,6 +154,20 @@ export default {
       font-weight: 700;
       line-height: 33px;
       text-align: left;
+      .button.is-loading{
+        padding: 0;
+        width: 32px;
+        background: transparent;
+        &:after{
+          margin:0;
+          border: 3px solid #dbdbdb;
+          width: 24px;
+          height: 24px;
+          top:3px;
+          left:3px;
+          border-color: transparent transparent #909090 #909090!important;
+        }
+      }
     }
     .data-time{
       position: absolute;
